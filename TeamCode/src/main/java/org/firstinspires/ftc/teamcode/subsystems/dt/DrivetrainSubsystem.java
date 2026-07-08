@@ -1,36 +1,30 @@
 package org.firstinspires.ftc.teamcode.subsystems.dt;
 
-import static org.firstinspires.ftc.teamcode.subsystems.dt.DrivetrainSubsystem.ChassisCalculations.MAX_FORWARD_SPEED;
-import static org.firstinspires.ftc.teamcode.subsystems.dt.DrivetrainSubsystem.ChassisCalculations.MAX_STRAFE_SPEED;
 
 import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import org.firstinspires.ftc.teamcode.math.DrivetrainMath;
+import org.firstinspires.ftc.teamcode.math.ExtendedVector;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.hardware.impl.MotorEx;
 
 
 public class DrivetrainSubsystem implements Subsystem {
 
-    public class ChassisCalculations {
-        public ChassisCalculations() {}
+    //region Boilerplate
+    public static final DrivetrainSubsystem INSTANCE = new DrivetrainSubsystem();
+    private DrivetrainSubsystem() { }
 
-        public final static double MAX_STRAFE_SPEED = 30;
-        public final static double MAX_FORWARD_SPEED = 40;
-    }
+    //endregion
 
-    public ChassisCalculations chassisCalculations = new ChassisCalculations();
-
-    public static DrivetrainSubsystem INSTANCE = new DrivetrainSubsystem();
-
-    private MotorEx frontRight = new MotorEx("frontRight").brakeMode();
-
-
-    private Vector desiredDriveVector = new Vector();
-
-    private Vector joystickVector = new Vector();
+    //region Definitions: Internal
+    private ExtendedVector joystickVector = new ExtendedVector();
 
     public enum DriveEnum {
         OFF,
@@ -39,33 +33,65 @@ public class DrivetrainSubsystem implements Subsystem {
     }
     DriveEnum driveEnum = DriveEnum.OFF;
 
-    public void setJoystickVector( Vector v) {
+    public void setJoystickVector( ExtendedVector v) {
         joystickVector = v;
     }
 
+    //endregion
+
+    //region Definitions: Hardware
+    public MotorEx frontLeftMotor;
+    public MotorEx backLeftMotor;
+    public MotorEx frontRightMotor;
+    public MotorEx backRightMotor;
+
+    //endregion
+
+    //region Commands
     public Command setDriveMethod(DriveEnum driveEnum) {
         return new LambdaCommand()
                 .setStart(() -> {
                     this.driveEnum = driveEnum;
                 })
-                .setIsDone(() -> true) // Returns if the command has finished
+                .setIsDone(() -> true)
                 .setInterruptible(true)
                 .named("Set Drive Method");
     }
 
+    //endregion
+
+    public void update(ExtendedVector v) {
+        setJoystickVector(v);
+    }
+
     @Override
     public void initialize() {
+        frontLeftMotor = new MotorEx("frontLeft").brakeMode();
+        backLeftMotor = new MotorEx("backLeft").brakeMode();
+        frontRightMotor = new MotorEx("frontRight").brakeMode();
+        backRightMotor = new MotorEx("backRight").brakeMode();
         driveEnum = DriveEnum.VECTOR;
     }
 
     @Override
     public void periodic() {
-        switch (driveEnum) {
-            case VECTOR:
-                desiredDriveVector.setOrthogonalComponents(
-                        joystickVector.getXComponent() * ChassisCalculations.MAX_STRAFE_SPEED,
-                        joystickVector.getYComponent() * ChassisCalculations.MAX_FORWARD_SPEED
-                );
+        if (ActiveOpMode.isStarted()) {
+            switch (driveEnum) {
+                case ROBO:
+                    frontLeftMotor.setPower(DrivetrainMath.calculateMotorPower(joystickVector, "fl"));
+                    frontRightMotor.setPower(DrivetrainMath.calculateMotorPower(joystickVector, "fr"));
+                    backLeftMotor.setPower(DrivetrainMath.calculateMotorPower(joystickVector, "bl"));
+                    backRightMotor.setPower(DrivetrainMath.calculateMotorPower(joystickVector, "br"));
+                    break;
+                case OFF:
+                    frontLeftMotor.setPower(0);
+                    frontRightMotor.setPower(0);
+                    backLeftMotor.setPower(0);
+                    backRightMotor.setPower(0);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
