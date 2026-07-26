@@ -9,6 +9,7 @@ import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.units.measuretypes.Angle;
 
+
 public class Slides implements Mechanism {
     private final Angle anglePerTick = Radians.of(2 * Math.PI / 537.7);
     private final NextMotor left = new NextMotor("left", anglePerTick);
