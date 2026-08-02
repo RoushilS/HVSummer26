@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes.TeleOp;
+package org.firstinspires.ftc.teamcode.drivetrains;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name = "Basic Drive", group = "TeleOp")
-public class basicDrive extends OpMode {
+public class mecanumDrive extends OpMode {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
