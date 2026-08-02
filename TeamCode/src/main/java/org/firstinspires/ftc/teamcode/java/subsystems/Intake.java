@@ -8,21 +8,18 @@ import dev.nextftc.hardware.RobotController;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.Mechanism;
 
-import static dev.nextftc.units.Units.RotationsPerMinute;
-
-public class Flywheel implements Mechanism {
+public class Intake implements Mechanism {
 
     enum Mode {
         ON,
         OFF
     }
 
+    double throttle = 0;
+
     private Mode mode = Mode.OFF;
 
-    private double target = 0;
-
-    private final NextMotor left = new NextMotor(RobotController.controlHub(), 0);
-    private final NextMotor right = new NextMotor(RobotController.controlHub(), 1);
+    private final NextMotor intake = new NextMotor(RobotController.controlHub(), 2);
 
     public Command setMode(String s) {
         return Command.build()
@@ -35,16 +32,17 @@ public class Flywheel implements Mechanism {
                 });
     }
 
-    public void updateTarget(double t) {
-        target = t;
+    public Command updateThrottle(double t) {
+        return Command.build()
+                .setStart(()->throttle = t);
     }
 
+    public void updateThrottleContinuous(double t) {
+        throttle = t;
+    }
 
-    public Flywheel() {
-        right.follow(left, NextMotor.Direction.REVERSE);
-
-        left.getVelocityConstants().setKP(0.01);
-        left.getVelocityConstants().setKD(0.001);
+    public Intake() {
+        mode = Mode.ON;
 
     }
 
@@ -52,9 +50,10 @@ public class Flywheel implements Mechanism {
     public void periodic() {
         switch(mode) {
             case ON:
-                left.setVelocitySetpoint(RotationsPerMinute.of(target));
+                intake.setThrottle(throttle);
             case OFF:
-                left.setVelocitySetpoint(RotationsPerMinute.of(0));
+                intake.setThrottle(0);
         }
+
     }
 }

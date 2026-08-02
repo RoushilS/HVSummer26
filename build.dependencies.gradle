@@ -26,7 +26,7 @@ dependencies {
     implementation("com.acmerobotics.slothboard:dashboard:0.2.4+0.5.1")
     implementation("com.bylazar.sloth:fullpanels:0.2.4+1.0.12")
 
-    implementation 'dev.nextftc.v2:robot:0.1.0-rc.1'
+    implementation 'dev.nextftc.v2:robot:0.1.0'
 
     implementation 'com.pedropathing:ftc:2.1.2'
     implementation 'com.pedropathing:telemetry:1.0.0'
