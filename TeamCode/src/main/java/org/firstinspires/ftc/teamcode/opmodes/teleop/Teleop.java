@@ -21,10 +21,15 @@ public class Teleop extends NextOpMode {
     @Override
     public void start() {
         robot.startDrive(gamepad1);
+        robot.slides.setMode("CONT").schedule();
+        robot.intake.setMode("OFF").schedule();
     }
 
     @Override
     public void periodic() {
+        robot.slides.updateThrottleContinuous(-gamepad1.right_stick_y);
+        robot.intake.updateThrottleContinuous(gamepad1.right_bumper ? 1.0 : 0.0);
+
         Telemetry.log("Status", "Running");
     }
 }

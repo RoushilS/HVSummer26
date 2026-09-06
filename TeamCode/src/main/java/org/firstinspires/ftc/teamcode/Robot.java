@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Slides;
 
 import java.util.Set;
 
@@ -13,11 +15,13 @@ import dev.nextftc.robot.drive.DriveCommandsKt;
 
 public class Robot implements NextRobot {
 
-    Drivetrain drivetrain = new Drivetrain();
+    public Drivetrain drivetrain = new Drivetrain();
+    public Slides slides = new Slides();
+    public Intake intake = new Intake();
 
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(drivetrain);
+        return Set.of(drivetrain, slides, intake);
     }
 
     public void startDrive(Gamepad gamepad1) {
